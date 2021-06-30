@@ -12,8 +12,8 @@ const {
  * @param {User} user
  */
 
-module.exports = async (client, reaction, user) => {
-    if (reaction.emoji.name !== "⭐") return;
+module.exports = async(client, reaction, user) => {
+    if (reaction.emoji.name !== client.config.reaction) return;
     if (reaction.partial) await reaction.fetch()
     if (reaction.message.partial) await reaction.message.fetch()
 
@@ -34,22 +34,22 @@ module.exports = async (client, reaction, user) => {
     if (reactions >= count) {
 
         try {
-            let msgId = client.sb.get(`message_${message.id}`).message
+            let msgId = client.sb.get(`message_${message.id}`).starboardMessage
             let gotMessage = await channel.messages.fetch(msgId)
             gotMessage.edit(gotMessage.content = `💫 **${reactions}** | ${message.url}`, {
                 embeds: gotMessage.embeds[0]
             })
         } catch (e) {
             let arrayOfStarboard = client.sb.keyArray().map(c => client.sb.get(c))
-            let foundMessage = arrayOfStarboard.find(c => c.message === message.id)
-
+            let foundMessage = arrayOfStarboard.find(c => c.starboardMessage === message.id)
             if (foundMessage) {
                 let channel = client.channels.cache.get(foundMessage.channel)
-                let starboardFoundMessage = await channel.messages.fetch(foundMessage.message)
+                let starboardFoundMessage = await channel.messages.fetch(foundMessage.starboardMessage)
+                if (!starboardFoundMessage.id) return;
                 let currentStars = parseInt(starboardFoundMessage.content.match(/^💫 \*\*(\d+)\*\* \| .+/)[1])
 
                 return starboardFoundMessage.edit(`💫 **${currentStars + 1}** | ${foundMessage.url}`, {
-                    embeds: message.embeds[0]
+                    embed: starboardFoundMessage.embeds[0]
                 })
             }
             if (message.embeds.length) {
@@ -59,7 +59,7 @@ module.exports = async (client, reaction, user) => {
                     name: message.author.username,
                     iconURL: message.author.displayAvatarURL()
                 }
-                
+
                 embed.footer = {
                     text: `ID: ${message.author.id}`
                 }
@@ -70,9 +70,10 @@ module.exports = async (client, reaction, user) => {
                 })
 
                 return client.sb.set(`message_${message.id}`, {
-                    message: sentMsg.id,
+                    starboardMessage: sentMsg.id,
                     channel: channel.id,
-                    url: message.url
+                    url: message.url,
+                    message: message.id
                 })
             }
 
@@ -92,9 +93,10 @@ module.exports = async (client, reaction, user) => {
             })
 
             client.sb.set(`message_${message.id}`, {
-                message: sentMsg.id,
+                starboardMessage: sentMsg.id,
                 channel: channel.id,
-                url: message.url
+                url: message.url,
+                message: message.id
             })
         }
     }

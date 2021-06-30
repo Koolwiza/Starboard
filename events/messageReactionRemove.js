@@ -11,8 +11,8 @@ const {
  * @param {User} user
  */
 
-module.exports = async (client, reaction, user) => {
-    if (reaction.emoji.name !== "⭐") return;
+module.exports = async(client, reaction, user) => {
+    if (reaction.emoji.name !== client.config.reaction) return;
     if (reaction.partial) await reaction.fetch()
     if (reaction.message.partial) await reaction.message.fetch()
 
@@ -37,10 +37,11 @@ module.exports = async (client, reaction, user) => {
         }
     } else {
         let values = client.sb.keyArray().map(c => client.sb.get(c))
-        let foundMsg = values.find(c => c.message === message.id)
+        let foundMsg = values.find(c => c.starboardMessage === message.id)
+
         if (foundMsg) {
             let channel = client.channels.cache.get(foundMsg.channel)
-            let starboardMessage = await channel.messages.fetch(foundMsg.message)
+            let starboardMessage = await channel.messages.fetch(foundMsg.starboardMessage)
 
             let currentStars = parseInt(starboardMessage.content.match(/^💫 \*\*(\d+)\*\* \| .+/)[1])
             return starboardMessage.edit(`💫 **${currentStars - 1}** | ${foundMsg.url}`, {

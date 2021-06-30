@@ -11,7 +11,7 @@ module.exports = {
      * @param {Discord.Client} client 
      */
 
-    execute: async function (message, args, client, {
+    execute: async function(message, args, client, {
         channel,
         count
     }) {
@@ -22,12 +22,12 @@ module.exports = {
             return message.channel.send(`**Starboard Channel**: ${channel}\n**Starboard Count**: ${count}`)
         } else if (type === "channel") {
             let channel = message.mentions.channels.first() || message.guild.channels.cache.get(args[1])
-            if(!channel) return message.channel.send("Please provide a valid channel")
+            if (!channel) return message.channel.send("Please provide a valid channel")
             client.sb.set(message.guild.id, channel.id, "channel")
             return message.channel.send(`Set channel as ${channel.toString()}`)
         } else if (type === "count") {
             let count = parseInt(args[1])
-            if(isNaN(count)) return message.channel.send("Please provide a valid count")
+            if (isNaN(count)) return message.channel.send("Please provide a valid count")
             client.sb.set(message.guild.id, count, "count")
             return message.channel.send(`Set count as \`${count}\``)
         }

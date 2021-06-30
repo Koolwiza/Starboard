@@ -9,7 +9,7 @@ const {
 
 client.commands = new Discord.Collection()
 client.config = config
-client.sb = new (require('enmap'))({
+client.sb = new(require('enmap'))({
     name: "starboard",
     autoFetch: true,
     fetchAll: true,
@@ -26,7 +26,7 @@ evtFiles.forEach(file => {
 
 let cmdFiles = readdirSync('./commands').filter(c => c.endsWith('.js'))
 
-for(let file of cmdFiles) {
+for (let file of cmdFiles) {
     let command = require(`./commands/${file}`)
     client.commands.set(command.name, command)
 }
